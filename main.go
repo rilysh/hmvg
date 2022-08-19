@@ -17,7 +17,7 @@ import (
 type User struct {
 	ID       primitive.ObjectID `bson:"_id"`
 	Username string             `bson:"username"`
-	Count    interface{}        `bson:"count"`
+	Count    uint64             `bson:"count"`
 }
 
 // Initalize mongodb connection
