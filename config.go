@@ -1,7 +1,7 @@
 package main
 
 const (
-	MONGODB_URL          = "mongodb+srv://root:root@cluster0.qrdq8k0.mongodb.net/?retryWrites=true&w=majority"
+	MONGODB_URL          = "REPLACE_WITH_YOUR_MONGODB_URI"
 	DOMAIN               = "localhost"
 	PORT                 = ":1337"
 	DEFAULT_FIRST_COLOR  = "#2a2a2a"
