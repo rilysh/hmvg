@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -60,6 +61,13 @@ func main() {
 
 	// Root page, basically the base URL
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Check the useragent to check if it contains github-camo
+		if len(r.UserAgent()) != 0 {
+			if !strings.Contains(r.UserAgent(), "github-camo") {
+				http.Error(w, "URL access only allowed on GitHub readme", http.StatusForbidden)
+				return
+			}
+		}
 
 		usr_name := r.URL.Query().Get("username")
 		first_color := r.URL.Query().Get("first_color")
@@ -102,7 +110,7 @@ func main() {
 					}
 				} else {
 					if len(second_color) != 0 {
-						svg_image(w, r, "#"+first_color, "#"+second_color, 0)
+						svg_image(w, r, DEFAULT_FIRST_COLOR, "#"+second_color, 0)
 					} else {
 						svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, 0)
 					}
@@ -148,9 +156,9 @@ func main() {
 					}
 				} else {
 					if len(second_color) != 0 {
-						svg_image(w, r, "#"+first_color, "#"+second_color, 0)
+						svg_image(w, r, DEFAULT_FIRST_COLOR, "#"+second_color, subresult.Count)
 					} else {
-						svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, 0)
+						svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, subresult.Count)
 					}
 				}
 				return

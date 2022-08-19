@@ -6,5 +6,5 @@ const (
 	PORT                 = ":1337"
 	DEFAULT_FIRST_COLOR  = "#2a2a2a"
 	DEFAULT_SECOND_COLOR = "#429ef5"
-	USE_HEROKU           = true 
+	USE_HEROKU           = false
 )
