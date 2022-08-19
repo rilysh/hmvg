@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,14 +27,13 @@ func initmongo(uri string) (context.Context, *mongo.Client, error) {
 }
 
 func launchAndServe() {
-	// Get the heroku port assigned by heroku itself
-	heroku_port := os.Getenv("PORT")
-	if heroku_port == "" {
-		fmt.Println("No port found from heroku to listen")
-		return
-	}
-
 	if USE_HEROKU == true {
+		// Get the heroku port assigned by heroku itself
+		heroku_port := os.Getenv("PORT")
+		if heroku_port == "" {
+			fmt.Println("No port found from heroku to listen")
+			return
+		}
 		fmt.Println("Launching server at port " + heroku_port)
 		if err := http.ListenAndServe(":"+heroku_port, nil); err != nil {
 			fmt.Println("Failed to launch the server, error: " + err.Error())
@@ -62,12 +60,7 @@ func main() {
 
 	// Root page, basically the base URL
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if len(r.UserAgent()) != 0 {
-			if !strings.Contains(r.UserAgent(), "github-camo") {
-				http.Error(w, "URL access only allowed on GitHub readme", http.StatusForbidden)
-				return
-			}
-		}
+
 		usr_name := r.URL.Query().Get("username")
 		first_color := r.URL.Query().Get("first_color")
 		second_color := r.URL.Query().Get("second_color")
@@ -108,7 +101,11 @@ func main() {
 						svg_image(w, r, "#"+first_color, DEFAULT_SECOND_COLOR, 0)
 					}
 				} else {
-					svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, 0)
+					if len(second_color) != 0 {
+						svg_image(w, r, "#"+first_color, "#"+second_color, 0)
+					} else {
+						svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, 0)
+					}
 				}
 
 				if err != nil {
@@ -150,7 +147,11 @@ func main() {
 						svg_image(w, r, "#"+first_color, DEFAULT_SECOND_COLOR, subresult.Count)
 					}
 				} else {
-					svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, subresult.Count)
+					if len(second_color) != 0 {
+						svg_image(w, r, "#"+first_color, "#"+second_color, 0)
+					} else {
+						svg_image(w, r, DEFAULT_FIRST_COLOR, DEFAULT_SECOND_COLOR, 0)
+					}
 				}
 				return
 			}
